@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@tavily/core": "^0.7.14",
+    "@types/express": "^5.0.6",
+    "ai": "^7.0.133",
+    "express": "^5.2.1",
+    "zod": "^4.6.5"
+  }
+}
