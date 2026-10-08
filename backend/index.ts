@@ -16,6 +16,27 @@ const openaiClient = new OpenAI({
 const app = express();
 app.use(express.json());
 
+
+app.post("/signup", async (req, res) => {
+
+})
+
+app.post("signin", async (req, res) => {
+
+})
+
+//past conversation get
+app.get("/convesations", async (req, res) => {
+
+})
+
+//past conversation get
+app.post("/convesations/:conversationsId", async (req, res) => {
+
+})
+
+
+
 app.post("/Perplexity_ask", async (req, res) => {
   try {
     // 1. Get user query
@@ -60,7 +81,7 @@ app.post("/Perplexity_ask", async (req, res) => {
       answer: response.output_text,
       sources: webSearchResult.map((result) => ({
         title: result.title,
-        url: result.url,
+        url: result.url
       })),
     });
   } catch (error) {
@@ -74,6 +95,16 @@ app.post("/Perplexity_ask", async (req, res) => {
     }
   }
 });
+
+
+app.post("/Perplexity_ask/follow_up", async (req, res) => {
+    //step 1. get the existing the chat from db
+    //step2. forward the full history to the llm
+    //step 2.5 todo do the context engineering here 
+
+    // step3. stream the response to the user
+
+})
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
