@@ -1,67 +1,80 @@
-import  { tavily } from '@tavily/core';
-import { Output, streamText } from "ai"; 
+import "dotenv/config";
+import { tavily } from "@tavily/core";
 import express from "express";
-import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from './prompt';
-import z, { string } from 'zod';
+import OpenAI from "openai";
 
-const client = tavily({apiKey: process.env.TAVILY_API_KEY})
+import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
+
+const tavilyClient = tavily({
+  apiKey: process.env.TAVILY_API_KEY,
+});
+
+const openaiClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 const app = express();
+app.use(express.json());
 
-app.post("/Perplexity_ask", async (req, res) =>{
-    //get the query from the user 
+app.post("/Perplexity_ask", async (req, res) => {
+  try {
+    // 1. Get user query
     const query = req.body.query;
 
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({
+        error: "Query is required",
+      });
+    }
 
-    //make sure the user has access/credits to hit the endpoint
+    console.log("Query:", query);
 
-
-    //check if we have web search indexed for a similar query
-
-    // web search to gather resources
-   const webSearchResponse = await  client.search(query, {
-        searchDepth: "advanced"
-    })
+    // 2. Search the web using Tavily
+    const webSearchResponse = await tavilyClient.search(query, {
+      searchDepth: "advanced",
+    });
 
     const webSearchResult = webSearchResponse.results;
 
+    console.log("Tavily search completed");
 
-    // do some context engineering on the prompt + web search responses
-
-    //hit the LLM and stream back the response
-
+    // 3. Add Tavily results + user query to prompt
     const prompt = PROMPT_TEMPLATE
-    .replace("{{WEB_SEARCH_RESULTS}}", JSON.stringify(webSearchResult))
-    .replace("{{USER_QUERY}}", query)
-
-        const result = streamText({
-            model: 'openai/gpt-5.4',
-            prompt: prompt,
-            system: SYSTEM_PROMPT,
-            output: Output.object({
-                schema: z.object({
-                  followUps: z.array(z.string()),
-                  answer: z.string()
-                }),
-              }),
-            
-        });
-
-        for await (const textPart of result.textStream){
-            process.stdout.write(textPart)
-        }
+      .replace("{{WEB_SEARCH_RESULTS}}",JSON.stringify(webSearchResult))
+      .replace("{{USER_QUERY}}", query);
 
 
-    // also stream back the sources and the follow up questions (which we can get another  parallel LLm call)
+    // 4. Send web information to OpenAI
 
-    //close the event stream
+    const response = await openaiClient.responses.create({
+      model: "gpt-4o-mini",
+      instructions: SYSTEM_PROMPT,
+      input: prompt,
+    });
+
+    console.log("OpenAI response generated");
 
 
+    // 5. Return answer + sources
+    return res.json({
+      answer: response.output_text,
+      sources: webSearchResult.map((result) => ({
+        title: result.title,
+        url: result.url,
+      })),
+    });
+  } catch (error) {
+    console.error("ERROR:", error);
 
+    if (!res.headersSent) {
+      return res.status(500).json({
+        error:
+          error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+});
 
-})
-
-
-
-app.listen(3000, () =>{
-    console.log("Server is running on 3000")
-})
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
