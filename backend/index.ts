@@ -2,8 +2,8 @@ import "dotenv/config";
 import { tavily } from "@tavily/core";
 import express from "express";
 import OpenAI from "openai";
-
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
+
 
 const tavilyClient = tavily({
   apiKey: process.env.TAVILY_API_KEY,
@@ -17,13 +17,6 @@ const app = express();
 app.use(express.json());
 
 
-app.post("/signup", async (req, res) => {
-
-})
-
-app.post("signin", async (req, res) => {
-
-})
 
 //past conversation get
 app.get("/convesations", async (req, res) => {
