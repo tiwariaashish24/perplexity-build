@@ -2,7 +2,20 @@ import { serve } from "bun";
 import index from "./index.html";
 
 const server = serve({
+  port: Number(process.env.PORT ?? 3001),
   routes: {
+    "/api/config": {
+      GET() {
+        const supabaseUrl = process.env.BUN_PUBLIC_SUPABASE_URL;
+        const supabasePublishableKey = process.env.BUN_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+        if (!supabaseUrl || !supabasePublishableKey) {
+          return Response.json({ error: "Missing Supabase environment variables" }, { status: 500 });
+        }
+
+        return Response.json({ supabaseUrl, supabasePublishableKey });
+      },
+    },
     // Serve index.html for all unmatched routes.
     "/*": index,
 

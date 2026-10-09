@@ -4,8 +4,8 @@ export function createClient(request: Request) {
   const headers = new Headers()
 
   const supabase = createServerClient(
-    process.env.VITE_SUPABASE_URL!,
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY!,
+    process.env.BUN_PUBLIC_SUPABASE_URL!,
+    process.env.BUN_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
