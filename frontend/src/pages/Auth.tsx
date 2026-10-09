@@ -8,11 +8,6 @@ export default function Auth() {
             provider: provider
         })
         
-        if(error){
-            alert("Error while signing in")
-        } else {
-            alert("Signed in")
-        }
 
     }
 
