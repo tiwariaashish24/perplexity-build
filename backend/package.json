@@ -11,7 +11,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.89",
+    "@ai-sdk/openai": "^4.0.91",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "7.8.0",
     "@prisma/extension-accelerate": "^3.0.1",
@@ -19,7 +19,7 @@
     "@tavily/core": "^0.7.14",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "ai": "^7.0.133",
+    "ai": "^7.0.137",
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
