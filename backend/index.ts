@@ -3,7 +3,8 @@ import { tavily } from "@tavily/core";
 import express from "express";
 import OpenAI from "openai";
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
-
+import { middleware } from "./middleware";
+import cors from "cors";
 
 const tavilyClient = tavily({
   apiKey: process.env.TAVILY_API_KEY,
@@ -15,22 +16,25 @@ const openaiClient = new OpenAI({
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 
-//past conversation get
-app.get("/convesations", async (req, res) => {
+// Get past conversations
+app.get("/conversations", middleware, async (req, res) => {
+  res.json({
+    userId: req.userId,
+  });
+});
 
-})
-
-//past conversation get
-app.post("/convesations/:conversationsId", async (req, res) => {
-
-})
+// Get a specific conversation
+app.post("/conversations/:conversationId", middleware, async (req, res) => {
+ 
+});
 
 
 
-app.post("/Perplexity_ask", async (req, res) => {
+app.post("/Perplexity_ask", middleware, async (req, res) => {
   try {
     // 1. Get user query
     const query = req.body.query;
@@ -90,7 +94,7 @@ app.post("/Perplexity_ask", async (req, res) => {
 });
 
 
-app.post("/Perplexity_ask/follow_up", async (req, res) => {
+app.post("/Perplexity_ask/follow_up",middleware, async (req, res) => {
     //step 1. get the existing the chat from db
     //step2. forward the full history to the llm
     //step 2.5 todo do the context engineering here 
